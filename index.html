@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-adsense-account" content="ca-pub-5190329149429304">
+    <title>Math Game with Increasing Difficulty</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f2f2f2;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            color: #444;
+            font-family: 'Georgia', serif;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #gameContainer, #withdrawContainer, #adsContainer {
+            display: none;
+        }
+        input {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: calc(100% - 22px);
+        }
+        .reward {
+            font-weight: bold;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #333;
+        }
+        .whatsapp-button {
+            background-color: #25D366;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .unique-code {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .whatsapp-button i {
+            margin-right: 8px;
+        }
+        #resultsContainer {
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .ads {
+            margin: 20px 0;
+        }
+    </style>
+    <script>
+        let currentStage = 1;
+        const maxStages = 100;
+        const minDifficultyLevel = 1;
+        const maxDifficultyLevel = 100;
+        const earningsPerStage = 1;
+        let totalEarnings = 0;
+        let adPlaying = false;
+        let answerTimeout;
+
+        function startGame() {
+            currentStage = 1;
+            totalEarnings = 0;
+            document.getElementById('reward').innerText = `Earnings: R${totalEarnings}`;
+            document.getElementById('uniqueCodeDisplay').innerText = `Unique Code: ${generateUniqueCode()}`;
+            generateMathQuestion();
+            document.getElementById('menuContainer').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'block';
+        }
+
+        function generateUniqueCode() {
+            return Math.random().toString(36).substr(2, 8); // Generate a random unique code
+        }
+
+        function generateMathQuestion() {
+            const num1 = Math.floor(Math.random() * (maxDifficultyLevel - minDifficultyLevel + 1)) + minDifficultyLevel;
+            const num2 = Math.floor(Math.random() * (maxDifficultyLevel - minDifficultyLevel + 1)) + minDifficultyLevel;
+            const operator = Math.floor(Math.random() * 4);
+            let question;
+
+            switch (operator) {
+                case 0:
+                    question = `What is ${num1} + ${num2}?`;
+                    break;
+                case 1:
+                    question = `What is ${num1} - ${num2}?`;
+                    break;
+                case 2:
+                    question = `What is ${num1} * ${num2}?`;
+                    break;
+                case 3:
+                    question = `What is ${num1} / ${num2}?`;
+                    break;
+            }
+
+            document.getElementById('mathQuestion').innerText = question;
+            document.getElementById('reward').innerText = `Earnings: R${totalEarnings}`;
+
+            startAnswerTimeout();
+        }
+
+        function startAnswerTimeout() {
+            const answerTime = 3000 - (currentStage - 1) * 100;
+            answerTimeout = setTimeout(() => {
+                alert("Time's up!");
+                showAd(); // Show ad after time is up
+            }, answerTime);
+        }
+
+        function showAd() {
+            clearTimeout(answerTimeout); // Clear the answer timeout
+            document.getElementById('adsContainer').style.display = 'block';
+            adPlaying = true;
+
+            // Simulating ad duration of 5 seconds
+            setTimeout(() => {
+                adPlaying = false;
+                document.getElementById('adsContainer').style.display = 'none';
+                giveReward();
+            }, 5000); // 5 seconds for ad duration
+        }
+
+        function giveReward() {
+            if (!adPlaying) {
+                totalEarnings += earningsPerStage;
+                currentStage++;
+                document.getElementById('reward').innerText = `Earnings: R${totalEarnings}`;
+
+                if (currentStage <= maxStages) {
+                    generateMathQuestion();
+                } else {
+                    alert("You've completed all stages! Take a screenshot and send it to your contact.");
+                    document.getElementById('gameContainer').style.display = 'none';
+                    document.getElementById('withdrawContainer').style.display = 'block';
+                }
+            }
+        }
+
+        function checkAnswer() {
+            if (adPlaying) {
+                alert("Please wait until the ad is finished.");
+                return;
+            }
+
+            clearTimeout(answerTimeout); // Clear the answer timeout if the answer is checked
+
+            const userInput = document.getElementById('answerInput').value;
+            const correctAnswer = eval(document.getElementById('mathQuestion').innerText.split('=')[0].replace('What is ', ''));
+
+            if (userInput === correctAnswer.toString()) {
+                document.getElementById('answerInput').style.backgroundColor = 'lightgreen';
+                setTimeout(() => {
+                    document.getElementById('answerInput').style.backgroundColor = 'white';
+                }, 1000);
+                showAd(); // Show ad instead of giving immediate reward
+            } else {
+                document.getElementById('answerInput').style.backgroundColor = 'lightcoral';
+                setTimeout(() => {
+                    document.getElementById('answerInput').style.backgroundColor = 'white';
+                }, 1000);
+            }
+        }
+
+        function withdrawEarnings() {
+            if (totalEarnings < 10) {
+                alert("You are making good progress. Congrats!!.");
+                return;
+            }
+
+            const uniqueCode = document.getElementById('uniqueCodeDisplay').innerText.split(':')[1].trim();
+            const message = `Hello, I'm sending my game results!\nTotal Earnings: R${totalEarnings}\nUnique Code: ${uniqueCode}`;
+            const whatsappNumber = "+27799841840";
+            const whatsappLink = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodeURIComponent(message)}`;
+
+            window.open(whatsappLink, '_blank');
+
+            totalEarnings = 0; // Reset earnings after sending
+            document.getElementById('withdrawContainer').style.display = 'none';
+            document.getElementById('menuContainer').style.display = 'block';
+        }
+
+        window.onload = function() {
+            document.getElementById('menuContainer').style.display = 'block';
+        };
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Math Money</h1>
+
+        <div id="menuContainer">
+            <button onclick="startGame()">Start Game</button>
+        </div>
+
+        <div id="gameContainer">
+            <h2 id="difficultyLevel"></h2>
+            <p id="mathQuestion"></p>
+            <input id="answerInput" type="number" placeholder="Your answer">
+            <button onclick="checkAnswer()">Submit Answer</button>
+            <p class="reward" id="reward">Earnings: R0</p>
+            <p class="unique-code" id="uniqueCodeDisplay">Unique Code: </p>
+        </div>
+
+        <!-- Ad container for ads -->
+        <div id="adsContainer" style="display: none;">
+            <p>Advertisement is playing... please wait.</p>
+            <ins class="adsbygoogle"
+                style="display:block; width:300px; height:250px"
+                data-ad-client="ca-pub-5190329149429304"
+                data-ad-slot="YOUR_AD_SLOT"
+                data-ad-format="auto"></ins>
+        </div>
+
+        <div id="withdrawContainer">
+            <h2>Withdraw Earnings</h2>
+            <button class="whatsapp-button" onclick="withdrawEarnings()">
+                <i class="fab fa-whatsapp"></i>
+                Send Results via WhatsApp
+            </button>
+            <p class="result">You will receive your game results on WhatsApp.</p>
+        </div>
+
+        <div id="resultsContainer" style="display: none; padding: 20px; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); background-color: white;"></div>
+    </div>
+
+</body>
+</html>
