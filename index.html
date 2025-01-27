@@ -221,7 +221,7 @@
             document.getElementById('menuContainer').style.display = 'block';
         };
     </script>
-    
+    <script async src="https://script.adquake.com/js/adquake.js" adquake-key="6jYaOrvYmUiPlcj1cK+vNQ=="></script>
 </head>
 <body>
 
@@ -243,13 +243,20 @@
 
         <!-- Ad container for ads -->
         <div id="adsContainer" style="display: none;">
+            <h2>Ad container</h2>
             <p>Advertisement is playing... please wait.</p>
-            <ins class="adsbygoogle"
-                style="display:block; width:300px; height:250px"
-                data-ad-client="ca-pub-5190329149429304"
-                data-ad-slot=
-                data-ad-format="auto"></ins>
+            <div id="adquake-container"></div>
+            <script>
+                AdQuake.init({
+                    container: 'adquake-container',
+                    key: '6jYaOrvYmUiPlcj1cK+vNQ==',
+                    adType: 'Interstitial'
+                });
+                AdQuake.loadAd();
+                AdQuake.showAd();
+            </script>
         </div>
+        
 
         <div id="withdrawContainer">
             <h2>Withdraw Earnings</h2>
